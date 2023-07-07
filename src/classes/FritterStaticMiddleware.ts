@@ -49,11 +49,23 @@ export interface FritterStaticMiddlewareOptions
 /** A class for constructing middlewares that serve static files. */
 export class FritterStaticMiddleware
 {
+	/** The value of the Cache-Control header. */
+	public readonly cacheControlHeader : string;
+
+	/** One or more directories to serve files from, prioritized from first to last if files exist in multiple directories. */
+	public readonly dirs : string[];
+
+	/** Whether to enable gzip compression. */
+	public readonly enableGzip : boolean;
+
+	/** The maximum age of the cache in seconds. */
+	public readonly maxAge : number;
+
 	/** The middleware function. */
 	public readonly execute : FritterMiddlewareFunction;
 
 	/** A cache of file data. */
-	public fileDataCache : { [filePath : string] : FritterStaticMiddlewareFile } = {};
+	public readonly fileDataCache : { [filePath : string] : FritterStaticMiddlewareFile } = {};
 
 	/** Constructs a new instance of the middleware. */
 	constructor(options : FritterStaticMiddlewareOptions)
@@ -62,11 +74,13 @@ export class FritterStaticMiddleware
 		// Default Options
 		//
 
-		options.enableGzip ??= true;
+		this.dirs = options.dirs;
 
-		options.maxAge ??= 0;
+		this.enableGzip = options.enableGzip ?? true;
 
-		options.cacheControlHeader ??= "public, max-age=" + options.maxAge;
+		this.maxAge = options.maxAge ?? 0;
+
+		this.cacheControlHeader = options.cacheControlHeader ?? "public, max-age=" + this.maxAge;
 
 		//
 		// Create Middleware
@@ -115,7 +129,7 @@ export class FritterStaticMiddleware
 				// Iterate Directories
 				//
 
-				for (const dir of options.dirs)
+				for (const dir of this.dirs)
 				{
 					//
 					// Build File Path
@@ -209,7 +223,7 @@ export class FritterStaticMiddleware
 
 			context.fritterResponse.setEntityTag(file.md5);
 
-			if (options.enableGzip)
+			if (this.enableGzip)
 			{
 				context.fritterResponse.appendVaryHeaderName("Accept-Encoding");
 			}
@@ -225,7 +239,7 @@ export class FritterStaticMiddleware
 
 			context.fritterResponse.setContentLength(file.size);
 
-			context.fritterResponse.setHeaderValue("Cache-Control", options.cacheControlHeader as string);
+			context.fritterResponse.setHeaderValue("Cache-Control", this.cacheControlHeader);
 
 			context.fritterResponse.setHeaderValue("Content-MD5", file.md5);
 
@@ -240,7 +254,7 @@ export class FritterStaticMiddleware
 
 			const acceptsGzip = context.fritterRequest.getAccepts().encoding("gzip") != null;
 
-			const shouldGzip = options.enableGzip && file.size > 1024 && isCompressible(file.type);
+			const shouldGzip = this.enableGzip && file.size > 1024 && isCompressible(file.type);
 
 			if (acceptsGzip && shouldGzip)
 			{
@@ -255,5 +269,42 @@ export class FritterStaticMiddleware
 				context.fritterResponse.setBody(readStream);
 			}
 		};
+	}
+
+	/** Returns a path with a cache-busting query string appended. */
+	public getCacheBustedPath(filePath : string) : string
+	{
+		if (filePath.charAt(0) == "/")
+		{
+			filePath = filePath.slice(1);
+		}
+
+		const file = this.fileDataCache[filePath];
+
+		if (file != null)
+		{
+			return filePath + "?mtime=" + file.stats.mtimeMs;
+		}
+
+		for (const dir of this.dirs)
+		{
+			const onDiskPath = path.join(dir, filePath);
+
+			try
+			{
+				// HACK: Don't use statSync here
+				const stats = fs.statSync(onDiskPath);
+
+				let modifiedTimestamp = stats.mtime.getTime();
+
+				return filePath + "?mtime=" + modifiedTimestamp.toString();
+			}
+			catch (error)
+			{
+				// Note: Doesn't matter if this fails, that just means it doesn't exist.
+			}
+		}
+
+		return filePath;
 	}
 }
