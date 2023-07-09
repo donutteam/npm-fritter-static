@@ -108,11 +108,6 @@ export class FritterStaticMiddleware
 				return await next();
 			}
 
-			if (requestedFilePath.charAt(0) == path.sep)
-			{
-				requestedFilePath = requestedFilePath.slice(1);
-			}
-
 			//
 			// Get File Data from Cache
 			//
@@ -274,11 +269,6 @@ export class FritterStaticMiddleware
 	/** Returns a path with a cache-busting query string appended. */
 	public getCacheBustedPath(filePath : string) : string
 	{
-		if (filePath.charAt(0) == "/")
-		{
-			filePath = filePath.slice(1);
-		}
-
 		const file = this.fileDataCache[filePath];
 
 		if (file != null)
