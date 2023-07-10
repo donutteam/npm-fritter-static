@@ -1,3 +1,6 @@
+## 1.1.2
+Fixing a bug where files were incorrectly prioritized.
+
 ## 1.1.1
 Tweaks to internal path logic.
 

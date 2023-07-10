@@ -181,6 +181,8 @@ export class FritterStaticMiddleware
 						};
 
 					this.fileDataCache[requestedFilePath] = file;
+
+					break;
 				}
 
 				if (file == null)
