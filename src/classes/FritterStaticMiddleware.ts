@@ -2,7 +2,6 @@
 // Imports
 //
 
-import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
@@ -18,8 +17,6 @@ import mimeTypes from "mime-types";
 export interface FritterStaticMiddlewareFile
 {
 	onDiskFilePath : string;
-
-	md5 : string;
 
 	modifiedDate : Date;
 
@@ -169,8 +166,6 @@ export class FritterStaticMiddleware
 						{
 							onDiskFilePath,
 
-							md5: crypto.createHash("md5").update(await fs.promises.readFile(onDiskFilePath)).digest("hex"),
-
 							modifiedDate: stats.mtime,
 
 							size: stats.size,
@@ -199,8 +194,6 @@ export class FritterStaticMiddleware
 
 			if (stats.mtimeMs != file.stats.mtimeMs)
 			{
-				file.md5 = crypto.createHash("md5").update(await fs.promises.readFile(file.onDiskFilePath)).digest("hex");
-
 				file.modifiedDate = stats.mtime;
 
 				file.size = stats.size;
@@ -217,8 +210,6 @@ export class FritterStaticMiddleware
 			context.fritterResponse.setStatusCode(200);
 
 			context.fritterResponse.setLastModified(file.modifiedDate);
-
-			context.fritterResponse.setEntityTag(file.md5);
 
 			if (this.enableGzip)
 			{
@@ -237,8 +228,6 @@ export class FritterStaticMiddleware
 			context.fritterResponse.setContentLength(file.size);
 
 			context.fritterResponse.setHeaderValue("Cache-Control", this.cacheControlHeader);
-
-			context.fritterResponse.setHeaderValue("Content-MD5", file.md5);
 
 			if (context.fritterRequest.getHttpMethod() == "HEAD")
 			{

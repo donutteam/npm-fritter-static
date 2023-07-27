@@ -1,3 +1,6 @@
+## 1.1.3
+Removing support for the ETag header.
+
 ## 1.1.2
 Fixing a bug where files were incorrectly prioritized.
 
