@@ -1,8 +1,7 @@
-## 1.1.4
-Updating packages.
-
 ## 1.1.3
-Removing support for the ETag header.
+
+* Removing support for the ETag header.
+* Updating packages.
 
 ## 1.1.2
 Fixing a bug where files were incorrectly prioritized.
