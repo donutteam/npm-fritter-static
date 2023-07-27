@@ -1,3 +1,6 @@
+## 1.1.4
+Updating packages.
+
 ## 1.1.3
 Removing support for the ETag header.
 
