@@ -1,13 +1,10 @@
 ## 2.0.0
 
-* Added the `FritterStaticMiddlewareDirectory` type in place of `string` on `dirs` when constructing an instance of the middleware.
-	* This new interface allows you to optionally specify a `mountPath` property.
-
-## 1.1.4
-
 * Updating packages.
 * Removing `eslint` and `@donutteam/eslint-config` dev dependencies.
 * Making `@fritter/core` a peer dependency.
+* Added the `FritterStaticMiddlewareDirectory` type in place of `string` on `dirs` when constructing an instance of the middleware.
+	* This new interface allows you to optionally specify a `mountPath` property.
 
 ## 1.1.3
 
