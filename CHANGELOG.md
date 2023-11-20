@@ -1,3 +1,7 @@
+## 2.0.1
+* Fixed a bug where mount paths did not work as expected on Windows.
+	* This also fixes an unintended behaviour where `fileDataCache` used backslashes as a separator on Windows.
+
 ## 2.0.0
 
 * Updating packages.

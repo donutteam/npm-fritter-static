@@ -107,7 +107,8 @@ export class FritterStaticMiddleware
 			// Get Path
 			//
 
-			let requestedFilePath = path.normalize(decodeURIComponent(context.fritterRequest.getPath()));
+			// Note: Uses posix, even on Windows, so paths always use forward slashes.
+			let requestedFilePath = path.posix.normalize(decodeURIComponent(context.fritterRequest.getPath()));
 
 			if (path.basename(requestedFilePath) == ".")
 			{
