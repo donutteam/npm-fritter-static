@@ -14,6 +14,15 @@ import mimeTypes from "mime-types";
 // Class
 //
 
+export interface FritterStaticMiddlewareDirectory
+{
+	/** Mount the directory to this path. */
+	mountPath? : string;
+
+	/** The path to the directory on disk. */
+	path : string;
+}
+
 export interface FritterStaticMiddlewareFile
 {
 	onDiskFilePath : string;
@@ -34,7 +43,7 @@ export interface FritterStaticMiddlewareOptions
 	cacheControlHeader? : string;
 
 	/** One or more directories to serve files from, prioritized from first to last if files exist in multiple directories. */
-	dirs : string[];
+	dirs : FritterStaticMiddlewareDirectory[];
 
 	/** Whether to enable gzip compression. */
 	enableGzip? : boolean;
@@ -50,7 +59,7 @@ export class FritterStaticMiddleware
 	public readonly cacheControlHeader : string;
 
 	/** One or more directories to serve files from, prioritized from first to last if files exist in multiple directories. */
-	public readonly dirs : string[];
+	public readonly dirs : FritterStaticMiddlewareDirectory[];
 
 	/** Whether to enable gzip compression. */
 	public readonly enableGzip : boolean;
@@ -124,16 +133,30 @@ export class FritterStaticMiddleware
 				for (const dir of this.dirs)
 				{
 					//
+					// Handle Mount Point
+					//
+
+					if (dir.mountPath != null)
+					{
+						if (!requestedFilePath.startsWith(dir.mountPath))
+						{
+							continue;
+						}
+
+						requestedFilePath = requestedFilePath.slice(dir.mountPath.length);
+					}
+
+					//
 					// Build File Path
 					//
 
-					const onDiskFilePath = path.join(dir, requestedFilePath);
+					const onDiskFilePath = path.join(dir.path, requestedFilePath);
 
 					//
 					// Prevent Directory Traversal
 					//
 
-					if (!onDiskFilePath.startsWith(dir))
+					if (!onDiskFilePath.startsWith(dir.path))
 					{
 						return await next();
 					}
@@ -269,7 +292,17 @@ export class FritterStaticMiddleware
 
 		for (const dir of this.dirs)
 		{
-			const onDiskPath = path.join(dir, filePath);
+			if (dir.mountPath != null)
+			{
+				if (!filePath.startsWith(dir.mountPath))
+				{
+					continue;
+				}
+
+				filePath = filePath.slice(dir.mountPath.length);
+			}
+
+			const onDiskPath = path.join(dir.path, filePath);
 
 			try
 			{
