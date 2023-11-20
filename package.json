@@ -5,8 +5,6 @@
 	"main": "./lib/index.js",
 	"scripts": {
 		"build": "npx rimraf lib && npx tsc",
-		"lint": "eslint . -c ./.eslintrc.cjs",
-		"lint-fix": "eslint . -c ./.eslintrc.cjs --fix",
 		"prepublishOnly": "npm run build"
 	},
 	"keywords": [
@@ -17,16 +15,16 @@
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
-		"@types/compressible": "^2.0.0",
-		"@types/mime-types": "^2.1.1",
+		"@types/compressible": "^2.0.2",
+		"@types/mime-types": "^2.1.4",
 		"compressible": "^2.0.18",
 		"mime-types": "^2.1.35"
 	},
+	"peerDependencies": {
+		"@fritter/core": "^0.1.9"
+	},
 	"devDependencies": {
-		"@donutteam/eslint-config": "^2.0.0",
-		"@fritter/core": "^0.1.8",
-		"eslint": "^8.45.0",
-		"rimraf": "^5.0.1",
-		"typescript": "^5.1.6"
+		"rimraf": "^5.0.5",
+		"typescript": "^5.3.2"
 	}
 }

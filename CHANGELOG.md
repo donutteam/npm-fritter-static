@@ -1,3 +1,9 @@
+## 1.1.4
+
+* Updating packages.
+* Removing `eslint` and `@donutteam/eslint-config` dev dependencies.
+* Making `@fritter/core` a peer dependency.
+
 ## 1.1.3
 
 * Removing support for the ETag header.
