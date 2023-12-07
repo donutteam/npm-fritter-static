@@ -10,6 +10,9 @@
 * Added the `FritterStaticMiddlewareDirectory` type in place of `string` on `dirs` when constructing an instance of the middleware.
 	* This new interface allows you to optionally specify a `mountPath` property.
 
+## 1.1.4
+Updating packages.
+
 ## 1.1.3
 
 * Removing support for the ETag header.
